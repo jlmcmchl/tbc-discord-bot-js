@@ -1,7 +1,12 @@
 var tba = require('./tba-bot');
 
-
-
-function modules() {
-    return [new tba()];
+class Modules {
+    constructor() {
+        this.modules = [new tba()];
+    }
+    Modules() {
+        return this.modules;
+    }
 }
+
+module.exports = Modules;

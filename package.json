@@ -16,9 +16,11 @@
     "ejs": "2.5.6",
     "erlpack": "github:hammerandchisel/erlpack",
     "express": "4.15.2",
+    "later": "^1.2.0",
     "libsodium-wrappers": "^0.5.4",
     "node-opus": "^0.2.7",
     "opusscript": "0.0.3",
+    "pg": "^7.3.0",
     "sodium": "^2.0.1",
     "superagent": "^3.6.3",
     "uws": "^0.14.5"
@@ -37,5 +39,5 @@
     "discord",
     "TBA"
   ],
-  "license": "Apache License v2.0"
+  "license": "Apache-2.0"
 }
