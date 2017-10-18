@@ -11,10 +11,17 @@
     "test": "node test.js"
   },
   "dependencies": {
-    "discord.js": "11.2.1",
+    "bufferutil": "^3.0.2",
+    "discord.js": "^11.2.1",
     "ejs": "2.5.6",
+    "erlpack": "github:hammerandchisel/erlpack",
     "express": "4.15.2",
-    "superagent": "^3.6.3"
+    "libsodium-wrappers": "^0.5.4",
+    "node-opus": "^0.2.7",
+    "opusscript": "0.0.3",
+    "sodium": "^2.0.1",
+    "superagent": "^3.6.3",
+    "uws": "^0.14.5"
   },
   "devDependencies": {
     "request": "^2.81.0",
