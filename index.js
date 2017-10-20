@@ -10,6 +10,8 @@ var modules = classes.Modules();
 
 var events = new Map();
 for (var i in modules) {
+  modules[i].setClient(client);
+  
   moduleEvents = modules[i].getEvents();
   for (var j in moduleEvents) {
     if (!events.has(j)) {

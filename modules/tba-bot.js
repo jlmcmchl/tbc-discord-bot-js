@@ -1,8 +1,10 @@
-var initTBA = require('../lib/tba-api-v3');
+const AbstractModule = require('./AbstractModule');
+const initTBA = require('../lib/tba-api-v3');
 team = /\[\[(\d+)\]\]/g;
 
-class initTBABot {
+class initTBABot extends AbstractModule {
     constructor() {
+        super();
         this.tba = new initTBA(process.env.XTBAAUTHKEY || '');
     }
     getEvents() { return {'message': message => {
@@ -35,22 +37,18 @@ class initTBABot {
                         return;
                     }
                     if (status == null) {
-                        message.channel.send("It looks like " + lEvent + " hasn't started yet. Check back once matches have begun for a status update!");
+                        message.channel.send(`It looks like ${lEvent} hasn't started yet. Check back once matches have begun for a status update!`);
                         return; 
                     }
     
                     var report = status['overall_status_str'];
                     report = report.replace(/<\/?b>/g, '**');
     
-                    message.channel.send('At ' + lEvent + ', ' + report);
+                    message.channel.send(`At ${lEvent}, ${report}`);
                 });
             });
         });
     }};}
-
-    getEndpoints() {
-        return {};
-    }
 }
 
 module.exports = initTBABot;
