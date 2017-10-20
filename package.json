@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "The Breakfast Company's Discord Bot",
   "engines": {
-    "node": "6.11.1"
+    "node": "8.7.x"
   },
   "main": "index.js",
   "scripts": {
@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "bufferutil": "^3.0.2",
-    "discord.js": "^11.2.1",
+    "discord.js": "github:hydrabolt/discord.js#master",
     "ejs": "2.5.6",
-    "erlpack": "github:hammerandchisel/erlpack",
+    "erlpack": "github:discordapp/erlpack",
     "express": "4.15.2",
     "later": "^1.2.0",
     "libsodium-wrappers": "^0.5.4",
@@ -23,7 +23,7 @@
     "pg": "^7.3.0",
     "sodium": "^2.0.1",
     "superagent": "^3.6.3",
-    "uws": "^0.14.5"
+    "uws": "^8.14.0"
   },
   "devDependencies": {
     "request": "^2.81.0",

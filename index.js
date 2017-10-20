@@ -71,9 +71,12 @@ client.login('Bot ' + process.env.TOKEN || '');
 
 app.set('port', (process.env.PORT || 5000));
 
-app.get('/', function(request, response) {
-  response.send("Hello World!");
-});
+for (var i in modules) {
+  var module = modules[i].getEndpoints();
+  for (var key in module) {
+    app.get(key, module[key]);
+  }
+}
 
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));

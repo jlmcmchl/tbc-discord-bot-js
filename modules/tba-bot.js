@@ -29,7 +29,15 @@ class initTBABot {
                 }
     
                 this.tba.TeamEventStatus(b, new Date().getFullYear() + lCode, (err, status) => {
-                    if(err) { console.log(err); return; }
+                    if(err) { 
+                        console.log(err);
+                        console.log(status);
+                        return;
+                    }
+                    if (status == null) {
+                        message.channel.send("It looks like " + lEvent + " hasn't started yet. Check back once matches have begun for a status update!");
+                        return; 
+                    }
     
                     var report = status['overall_status_str'];
                     report = report.replace(/<\/?b>/g, '**');
@@ -39,6 +47,10 @@ class initTBABot {
             });
         });
     }};}
+
+    getEndpoints() {
+        return {};
+    }
 }
 
 module.exports = initTBABot;
