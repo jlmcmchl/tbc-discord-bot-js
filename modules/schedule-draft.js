@@ -91,6 +91,7 @@ class DraftScheduler extends AbstractModule  {
     getEvents() { return {'message': message => {
             var r = draft.exec(message.content);
             if(!r) return;
+            message.channel.send(`Hey ${message.author.username}, I got your draft. I'll remember it and setup your channel and roles the day of.`);
 
             var name, teams, rounds, date, msgId, chId, guildId;
             name = r[1];
@@ -100,7 +101,6 @@ class DraftScheduler extends AbstractModule  {
             guildId = message.channel.guild.id;
             chId = message.channel.id;
             msgId = message.id;
-            userId = message.author.id;
 
             var values = [name, teams, rounds, date, guildId, chId, msgId];
             this.pgClient.query(insertDraft, values, (err, res) => {
