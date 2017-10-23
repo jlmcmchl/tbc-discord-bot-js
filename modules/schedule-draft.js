@@ -170,7 +170,7 @@ I'll setup your channel and roles the day of.`);
       {
         'key': 'message',
         'callback': message => {
-          var r = /!updateMyDrafts/i.exec(message.content);
+          var r = /^!updateMyDrafts$/i.exec(message.content);
           if (!r) {
             return;
           }
