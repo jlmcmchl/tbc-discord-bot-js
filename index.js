@@ -14,14 +14,15 @@ for (var i in modules) {
   
   moduleEvents = modules[i].getEvents();
   for (var j in moduleEvents) {
-    if (!events.has(j)) {
-      events = events.set(j, []);
+    event = moduleEvents[j];
+    if (!events.has(event.key)) {
+      events = events.set(event.key, []);
     }
-    events.set(j, events.get(j).concat(moduleEvents[j]));
+    events.set(event.key, events.get(event.key).concat(event.callback));
   }
 }
 
-var debug = false;
+var debug = process.env.DEBUG == true;
 
 client.on('channelCreate',                  function(channel) {                 if (debug) { console.log('channelCreate', channel); }                                 if (events.has('channelCreate')) {                  var callbacks = events.get('channelCreate');                  for (var i in callbacks) { callbacks[i](channel);                  }}});
 client.on('channelDelete',                  function(channel) {                 if (debug) { console.log('channelDelete', channel); }                                 if (events.has('channelDelete')) {                  var callbacks = events.get('channelDelete');                  for (var i in callbacks) { callbacks[i](channel);                  }}});

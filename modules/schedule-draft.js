@@ -4,10 +4,13 @@ const {Permissions} = require('discord.js');
 const later = require('later');
 const async = require('async');
 
-var draft = /Name: (\w+)\s*Teams: ([-a-zA-Z0-9@:%._\/\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&//=]*)\s*Rounds: (\d+)\s*Date: (\d\d\/\d\d@\d\d:\d\d)/im;
-var insertDraft = 'INSERT INTO Drafts (Name, Teams, Rounds, Date, Guild, oChannel, Msg) VALUES ($1, $2, $3, $4, $5, $6, $7);';
+var draft = /Name: ([[\w \(\)]+)\s*Teams: ([^\n]+)\s*Rounds: (\d+)\s*Date: ([^\n]+)/im;
+var insertDraft = 'INSERT INTO Drafts (Name, Teams, Rounds, Date, Guild, oChannel, Msg, Drafter) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING Draft_Key;';
 var selectDrafts = 'SELECT Draft_Key, Name, Teams, Rounds, Date, Guild, oChannel, Msg FROM Drafts WHERE COALESCE(Channel, \'\') = \'\' AND Date BETWEEN $1 AND $2;';
-var updateDraft = 'UPDATE Drafts SET Channel = $1, Role = $2 WHERE Draft_Key = $3;';
+var selectDraftsKey = 'SELECT Name, Teams, Rounds, Date FROM Drafts WHERE Draft_Key = $1';
+var setDraftChannel = 'UPDATE Drafts SET Channel = $1, Role = $2 WHERE Draft_Key = $3;';
+var updateDraft = 'UPDATE Drafts SET Name = $1, Teams = $2, Rounds = $3, Date = $4 WHERE Draft_Key = $5 RETURNING Draft_Key;';
+var userDrafts = 'SELECT Guild, oChannel, Msg, Draft_Key FROM Drafts WHERE Drafter = $1 AND COALESCE(Channel, \'\') = \'\';';
 
 class DraftScheduler extends AbstractModule {
   constructor() {
@@ -89,7 +92,7 @@ Teams competing can be found at the following link: ${row.teams}
 Here are the drafters:
 ${results.join('\n')}`);
                             console.log(row.draft_key);
-                            this.pgClient.query(updateDraft, [ch.id, role.id, row.draft_key]);
+                            this.pgClient.query(setDraftChannel, [ch.id, role.id, row.draft_key]);
                           });
                       });
                   });
@@ -99,38 +102,101 @@ ${results.join('\n')}`);
     });
   }
 
-  getEvents() {
-    return {
-      'message': message => {
-        var r = draft.exec(message.content);
-        if (!r) {
+  saveDraft(msg, draft_key, cb) {
+    var r = draft.exec(msg.content);
+    if (!r) {
+      return false;
+    }
+
+    var name;
+    var teams;
+    var rounds;
+    var date;
+    var msgId;
+    var chId;
+    var guildId;
+    var drafter;
+    name = r[1];
+    teams = r[2];
+    rounds = parseInt(r[3]);
+    date = new Date(new Date().getFullYear() + " " + r[4]);
+    guildId = msg.channel.guild.id;
+    chId = msg.channel.id;
+    msgId = msg.id;
+    drafter = msg.author.id;
+
+    if (date.getHours() < 12) {
+      date.setHours(date.getHours() + 12);
+    }
+
+    var query;
+    var values;
+
+    if (draft_key) {
+      query = updateDraft;
+      values = [name, teams, rounds, date, draft_key];
+    } else {
+      query = insertDraft;
+      values = [name, teams, rounds, date, guildId, chId, msgId, drafter];
+    }
+
+    async.parallel(
+      [callback => this.pgClient.query(query, values, (err, res) => {
+        callback(err, res);
+      })],
+      (err, res) => {
+        if (err) {
+          console.log(err);
           return;
         }
-        message.channel.send(`Hey ${message.author.username}, I got your draft. I'll remember it and setup your channel and roles the day of.`);
+        cb(res[0].rows[0].draft_key);
+      });
+  }
 
-        var name;
-        var teams;
-        var rounds;
-        var date;
-        var msgId;
-        var chId;
-        var guildId;
-        name = r[1];
-        teams = r[2];
-        rounds = parseInt(r[3]);
-        date = new Date(new Date().getFullYear() + " " + r[4]);
-        guildId = message.channel.guild.id;
-        chId = message.channel.id;
-        msgId = message.id;
-
-        var values = [name, teams, rounds, date, guildId, chId, msgId];
-        this.pgClient.query(insertDraft, values, (err, res) => {
-          if (err) {
-            console.log(err, res);
+  getEvents() {
+    return [
+      {
+        'key': 'message',
+        'callback': message => {
+          this.saveDraft(message, null, (key) => {
+            this.pgClient.query(selectDraftsKey, [key], (err, res) => {
+              message.channel.send(`Hey ${message.author.username}, I have you setup to run **${res.rows[0].name}** on **${res.rows[0].date}**.
+It will be **${res.rows[0].rounds} rounds** of these teams: ${res.rows[0].teams}
+I'll setup your channel and roles the day of.`);
+            });
+          });
+        }
+      },
+      {
+        'key': 'message',
+        'callback': message => {
+          var r = /!updateMyDrafts/i.exec(message.content);
+          if (!r) {
+            return;
           }
-        });
-      }
-    };
+
+          this.pgClient.query(userDrafts, [message.author.id], (err, res) => {
+            if (err) {
+              console.log(err, res);
+            }
+
+            var msgs = res.rows.map(row => callback => {
+              this.dClient.guilds.get(row.guild).channels.get(row.ochannel).messages.fetch(row.msg).then(msg => callback(null, {'key':row.draft_key, 'message':msg}));
+            });
+
+            async.parallel(
+              msgs,
+              (err, drafts) => drafts.map(draft => {
+                this.saveDraft(draft.message, draft.key, (key) => {
+                  this.pgClient.query(selectDraftsKey, [key], (err, res) => {
+                    message.channel.send(`Hey ${message.author.username}, I've updated you draft of **${res.rows[0].name}** on **${res.rows[0].date}**.
+It will be **${res.rows[0].rounds} rounds** of these teams: ${res.rows[0].teams}`);
+                  });
+                });
+              }));
+          });
+        }
+      }];
   }
 
   getEndpoints() {

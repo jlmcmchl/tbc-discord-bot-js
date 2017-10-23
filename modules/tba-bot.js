@@ -8,8 +8,9 @@ class initTBABot extends AbstractModule {
     this.tba = new initTBA(process.env.XTBAAUTHKEY || '');
   }
   getEvents() {
-    return {
-      'message': message => {
+    return [{
+      'key': 'message',
+      'callback': message => {
         message.content.replace(team, (a, b, c, d) => {
           var lEvent;
           var lCode;
@@ -59,7 +60,7 @@ class initTBABot extends AbstractModule {
           });
         });
       }
-    };
+    }];
   }
 }
 

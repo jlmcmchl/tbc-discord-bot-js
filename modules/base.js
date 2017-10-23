@@ -5,9 +5,7 @@ class Base extends AbstractModule {
     super();
   };
   getEvents() {
-    return {
-      'message': (message) => console.log(message.content)
-    };
+    return [];
   }
   getEndpoints() {
     return {

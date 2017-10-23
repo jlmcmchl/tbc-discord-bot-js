@@ -6,7 +6,7 @@ class AbstractModule {
     this.dClient = client;
   }
   getEvents() {
-    return {};
+    return [];
   }
   getEndpoints() {
     return {};
