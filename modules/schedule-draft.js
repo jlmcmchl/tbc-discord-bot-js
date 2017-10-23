@@ -1,6 +1,5 @@
 const AbstractModule = require('./AbstractModule');
 const {Client} = require('pg');
-const {Permissions} = require('discord.js');
 const later = require('later');
 const async = require('async');
 
@@ -87,7 +86,7 @@ class DraftScheduler extends AbstractModule {
                           'reason': `Drafting channel for ${row.name}`
                         })
                           .then(ch => {
-                            ch.send(`Hello <@!${role.id}>! This channel has been setup to draft ${row.name} today at ${row.date.toTimeString()}.
+                            ch.send(`Hello <@${role.id}>! This channel has been setup to draft ${row.name} today at ${row.date.toTimeString()}.
 Teams competing can be found at the following link: ${row.teams}
 Here are the drafters:
 ${results.join('\n')}`);
@@ -181,7 +180,10 @@ I'll setup your channel and roles the day of.`);
             }
 
             var msgs = res.rows.map(row => callback => {
-              this.dClient.guilds.get(row.guild).channels.get(row.ochannel).messages.fetch(row.msg).then(msg => callback(null, {'key':row.draft_key, 'message':msg}));
+              this.dClient.guilds.get(row.guild).channels.get(row.ochannel).messages.fetch(row.msg).then(msg => callback(null, {
+                'key': row.draft_key,
+                'message': msg
+              }));
             });
 
             async.parallel(
