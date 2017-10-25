@@ -13,6 +13,7 @@ var updateDraft = 'UPDATE Drafts SET Name = $1, Teams = $2, Rounds = $3, Date = 
 var userDrafts = 'SELECT Guild, oChannel, Msg, Draft_Key FROM Drafts WHERE Drafter = $1 AND COALESCE(Channel, \'\') = \'\';';
 var resetDraft_1 = `SELECT Drafter, Role FROM Drafts WHERE Channel = $1;`;
 var resetDraft_2 = `UPDATE Drafts SET Channel = '', Role = '' WHERE Channel = $1;`;
+var getDraft = 'SELECT Guild, oChannel, Msg, Draft_Key FROM Drafts WHERE Name = $1 AND Drafter = $2;';
 
 class DraftScheduler extends AbstractModule {
   constructor() {
@@ -190,7 +191,7 @@ I'll setup your channel and roles the day of.`);
               (err, drafts) => drafts.map(draft => {
                 this.saveDraft(draft.message, draft.key, (key) => {
                   this.pgClient.query(selectDraftsKey, [key], (err, res) => {
-                    message.channel.send(`Hey ${message.author.username}, I've updated you draft of **${res.rows[0].name}** on **${res.rows[0].date}**.
+                    message.channel.send(`Hey ${message.author.username}, I've updated your draft of **${res.rows[0].name}** on **${res.rows[0].date}**.
 It will be **${res.rows[0].rounds} rounds** of these teams: ${res.rows[0].teams}`);
                   });
                 });
@@ -215,6 +216,37 @@ It will be **${res.rows[0].rounds} rounds** of these teams: ${res.rows[0].teams}
               message.guild.roles.get(role).delete('Cleaning up draft');
               message.channel.delete('Cleaning Up Draft');
             }
+          });
+        }
+      },
+      {
+        'key': 'messageUpdate',
+        'callback': (oldMessage, newMessage) => {
+          var o = draft.exec(oldMessage.content);
+          if (!o) return;
+
+          this.pgClient.query(getDraft, [o[1], oldMessage.author.id], (err, res) => {
+            if (err) {
+              console.log(err, res);
+            }
+
+            var msgs = res.rows.map(row => callback => {
+              this.dClient.guilds.get(row.guild).channels.get(row.ochannel).messages.fetch(row.msg).then(msg => callback(null, {
+                'key': row.draft_key,
+                'message': msg
+              }));
+            });
+
+            async.parallel(
+              msgs,
+              (err, drafts) => drafts.map(draft => {
+                this.saveDraft(draft.message, draft.key, (key) => {
+                  this.pgClient.query(selectDraftsKey, [key], (err, res) => {
+                    oldMessage.channel.send(`Hey ${oldMessage.author.username}, I've updated your draft of **${res.rows[0].name}** on **${res.rows[0].date}**.
+It will be **${res.rows[0].rounds} rounds** of these teams: ${res.rows[0].teams}`);
+                  });
+                });
+              }));
           });
         }
       },];
