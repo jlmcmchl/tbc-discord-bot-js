@@ -1,9 +1,13 @@
 class AbstractModule {
   constructor() {
     this.dClient = null;
+    this.pgClient = null;
   }
-  setClient(client) {
+  setDClient(client) {
     this.dClient = client;
+  }
+  setPGClient(client) {
+    this.pgClient = client;
   }
   getEvents() {
     return [];

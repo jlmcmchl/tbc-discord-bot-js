@@ -1,5 +1,6 @@
 const AbstractModule = require('./AbstractModule');
-const {Client} = require('pg');
+const Pg = require('pg');
+const {Permissions} = require('discord.js');
 const later = require('later');
 const async = require('async');
 
@@ -10,15 +11,12 @@ var selectDraftsKey = 'SELECT Name, Teams, Rounds, Date FROM Drafts WHERE Draft_
 var setDraftChannel = 'UPDATE Drafts SET Channel = $1, Role = $2 WHERE Draft_Key = $3;';
 var updateDraft = 'UPDATE Drafts SET Name = $1, Teams = $2, Rounds = $3, Date = $4 WHERE Draft_Key = $5 RETURNING Draft_Key;';
 var userDrafts = 'SELECT Guild, oChannel, Msg, Draft_Key FROM Drafts WHERE Drafter = $1 AND COALESCE(Channel, \'\') = \'\';';
+var resetDraft_1 = `SELECT Drafter, Role FROM Drafts WHERE Channel = $1;`;
+var resetDraft_2 = `UPDATE Drafts SET Channel = '', Role = '' WHERE Channel = $1;`;
 
 class DraftScheduler extends AbstractModule {
   constructor() {
     super();
-    this.pgClient = new Client({
-      connectionString: process.env.DATABASE_URL,
-      ssl: true,
-    });
-    this.pgClient.connect();
 
     var sched = later.parse.recur().on(12).hour();
     this.job = later.setInterval(this.updateDrafts, sched);
@@ -76,8 +74,9 @@ class DraftScheduler extends AbstractModule {
 
                     async.parallel(
                       drafters.map(drafter => callback => {
-                        msg.guild.member(drafter).addRole(role, `You're drafting ${row.name}`);
-                        callback(null, drafter.username);
+                        var gm = msg.guild.member(drafter);
+                        gm.addRole(role, `You're drafting ${row.name}`);
+                        callback(null, gm.nickname);
                       }),
                       (err, results) => {
                         msg.guild.createChannel(chName, 'text', {
@@ -86,7 +85,7 @@ class DraftScheduler extends AbstractModule {
                           'reason': `Drafting channel for ${row.name}`
                         })
                           .then(ch => {
-                            ch.send(`Hello <@${role.id}>! This channel has been setup to draft ${row.name} today at ${row.date.toTimeString()}.
+                            ch.send(`Hello <@&${role.id}>! This channel has been setup to draft ${row.name} today at ${row.date.toTimeString()}.
 Teams competing can be found at the following link: ${row.teams}
 Here are the drafters:
 ${results.join('\n')}`);
@@ -198,15 +197,32 @@ It will be **${res.rows[0].rounds} rounds** of these teams: ${res.rows[0].teams}
               }));
           });
         }
-      }];
+      },
+      {
+        'key': 'message',
+        'callback': message => {
+          var r = /!reset/i.exec(message.content);
+          if (!r) return;
+
+          this.pgClient.query(resetDraft_1, [message.channel.id], (err, res) => {
+            var drafter = res.rows[0].drafter;
+            var role = res.rows[0].role;
+
+            var author = message.guild.members.get(message.author.id);
+            if (author.permissions.bitfield & Permissions.FLAGS.ADMINISTRATOR || message.author.id == drafter) {
+              return;
+              this.pgClient.query(resetDraft_2, [message.channel.id], console.log);
+              message.guild.roles.get(role).delete('Cleaning up draft');
+              message.channel.delete('Cleaning Up Draft');
+            }
+          });
+        }
+      },];
   }
 
   getEndpoints() {
     return {
       '/getDrafts': (request, response) => {
-        while (!this.dClient.readyAt) {
-          ;
-        }
         this.updateDrafts(); response.send('Checking if there\'s drafts to make...');
       }
     };

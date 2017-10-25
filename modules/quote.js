@@ -9,14 +9,6 @@ const getQuote = 'SELECT User_ID, Content FROM Quotes WHERE Quote_ID = $1;';
 const countQuotes = 'SELECT Quote_ID FROM Quotes WHERE COALESCE($1, User_ID) = User_ID;';
 
 class Quote extends AbstractModule {
-  constructor() {
-    super();
-    this.pgClient = new Client({
-      connectionString: process.env.DATABASE_URL,
-      ssl: true,
-    });
-    this.pgClient.connect();
-  };
   getEvents() {
     return [
       {
