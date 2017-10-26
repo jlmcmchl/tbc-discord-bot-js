@@ -13,6 +13,12 @@ pgClient = new Pg.Client({
 });
 pgClient.connect();
 
+var Elasticsearch = require('elasticsearch');
+var esClient = new Elasticsearch.Client({
+  host: process.env.BONSAI_URL,
+  'apiVersion': '5.4',
+});
+
 var Modules = require('./modules');
 var classes = new Modules();
 var modules = classes.Modules();
@@ -21,6 +27,7 @@ var events = new Map();
 for (var i in modules) {
   modules[i].setDClient(dClient);
   modules[i].setPGClient(pgClient);
+  modules[i].setESClient(esClient);
   
   moduleEvents = modules[i].getEvents();
   for (var j in moduleEvents) {
