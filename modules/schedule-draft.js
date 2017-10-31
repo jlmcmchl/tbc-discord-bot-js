@@ -223,7 +223,7 @@ It will be **${res.rows[0].rounds} rounds** of these teams: ${res.rows[0].teams}
         'key': 'messageUpdate',
         'callback': (oldMessage, newMessage) => {
           var o = draft.exec(oldMessage.content);
-          if (!o) return;
+          if (!o || oldMessage.content == newMessage.content || oldMessage.content == '') return;
 
           this.pgClient.query(getDraft, [o[1], oldMessage.author.id], (err, res) => {
             if (err) {
