@@ -23,7 +23,7 @@ class CDSpyMonitor extends AbstractModule {
             ", Date: " + new Date().getMonth() + "/" + new Date().getDate() +
             ", Link: https://www.chiefdelphi.com/forums/showthread.php?t=" + data.event.threadid[0];
           
-            this.dClient.channels(process.env.FF_THREAD_CHANNEL).send(msg);
+            this.dClient.channels.resolve(process.env.FF_THREAD_CHANNEL).send(msg);
         } 
       });
   }
