@@ -6,11 +6,13 @@ const xmlObjects = require('xml-objects');
 class CDSpyMonitor extends AbstractModule {
   constructor() {
     super();
+
     this.latest = 0;
   }
+  
+  CDSpyUpdate(discord) {
+    console.log('Making request to CD Spy', this.latest);
 
-  CDSpyUpdate() {
-    console.log('Making request to CD Spy');
     request('https://www.chiefdelphi.com/forums/cdspy.php?do=xml&last=' + this.latest)
       .pipe(xmlNodes('event'))
       .pipe(xmlObjects())
@@ -20,9 +22,9 @@ class CDSpyMonitor extends AbstractModule {
         if (data.event.forumname[0] == 'Fantasy FIRST' && data.event.what[0] == 'New Thread') {
           var msg = data.event.title[0] + 
             ": Runner: " + data.event.poster[0] + 
-            ", Date: " + new Date().getMonth() + "/" + new Date().getDate() +
+            ", Date: " + (new Date().getMonth() + 1) + "/" + new Date().getDate() +
             ", Link: https://www.chiefdelphi.com/forums/showthread.php?t=" + data.event.threadid[0];
-          
+            
             this.dClient.channels.resolve(process.env.FF_THREAD_CHANNEL).send(msg);
         } 
       });
@@ -33,8 +35,8 @@ class CDSpyMonitor extends AbstractModule {
       {
         'key': 'ready',
         'callback': () => {
-          this.CDSpyUpdate();
-          this.interval = setInterval(this.CDSpyUpdate, 60000);
+          this.CDSpyUpdate(this.dClient);
+          this.interval = setInterval(() => this.CDSpyUpdate(), 60000);
         }
       },
     ];
