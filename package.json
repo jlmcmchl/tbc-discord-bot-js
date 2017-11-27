@@ -23,6 +23,7 @@
     "node-opus": "^0.2.7",
     "opusscript": "0.0.3",
     "pg": "^7.3.0",
+    "request": "^2.83.0",
     "sodium": "^2.0.1",
     "superagent": "^3.6.3",
     "uws": "^8.14.1",
