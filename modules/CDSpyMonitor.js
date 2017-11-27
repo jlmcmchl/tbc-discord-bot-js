@@ -34,7 +34,7 @@ class CDSpyMonitor extends AbstractModule {
         'key': 'ready',
         'callback': () => {
           this.CDSpyUpdate();
-          this.interval = setInterval(CDSpyUpdate, 60000);
+          this.interval = setInterval(this.CDSpyUpdate, 60000);
         }
       },
     ];
