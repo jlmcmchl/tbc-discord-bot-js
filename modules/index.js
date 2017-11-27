@@ -2,7 +2,7 @@ var Base = require('./base');
 var Tba = require('./tba-bot');
 var Ds = require('./schedule-draft');
 var Quote = require('./quote');
-var GriffBot = require('./GriffBot');
+//var GriffBot = require('./GriffBot');
 //var TeamAwardList = require('./TeamAwardList');
 var CDSpyMonitor = require('./CDSpyMonitor');
 
@@ -13,7 +13,7 @@ class Modules {
       new Tba(),
       new Ds(),
       new Quote(),
-      new GriffBot(),
+      //new GriffBot(),
       new CDSpyMonitor(),
       //new TeamAwardList(),
     ];
