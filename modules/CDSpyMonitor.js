@@ -12,6 +12,7 @@ class CDSpyMonitor extends AbstractModule {
   
   CDSpyUpdate(discord) {
     console.log('Making request to CD Spy', this.latest);
+    console.log(process.env.FF_THREAD_CHANNEL);
 
     request('https://www.chiefdelphi.com/forums/cdspy.php?do=xml&last=' + this.latest)
       .pipe(xmlNodes('event'))
