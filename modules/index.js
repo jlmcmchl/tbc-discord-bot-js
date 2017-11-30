@@ -5,6 +5,7 @@ var Quote = require('./quote');
 //var GriffBot = require('./GriffBot');
 //var TeamAwardList = require('./TeamAwardList');
 var CDSpyMonitor = require('./CDSpyMonitor');
+var magicBall = require('./magicBall');
 
 class Modules {
   constructor() {
@@ -16,6 +17,7 @@ class Modules {
       //new GriffBot(),
       new CDSpyMonitor(),
       //new TeamAwardList(),
+      new magicBall(),
     ];
   }
   Modules() {
