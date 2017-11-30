@@ -29,8 +29,7 @@ class MagicBall extends AbstractModule {
       {
         'key': 'message',
         'callback': message => {
-          var r = /!8Ball/i.exec(message.content);
-          if (!r) return;
+          if (!/!8Ball/i.test(message.content)) return;
 
           var choice = Math.floor(Math.random() * responses.length);
           var resp = 'Magic 8 Ball Says: ' + responses[choice];
