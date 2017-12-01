@@ -17,9 +17,7 @@ class CDSpyMonitor extends AbstractModule {
       .pipe(xmlNodes('event'))
       .pipe(xmlObjects())
       .on('data', data => {
-        this.latest = data.event.id[0] > this.latest ? data.event.id[0] : this.latest;
-
-        if (data.event.forumname[0] == 'Fantasy FIRST' && data.event.what[0] == 'New Thread') {
+        if (data.event.forumname[0] == 'Fantasy FIRST' && data.event.what[0] == 'New Thread' && this.latest > 0) {
           var msg = data.event.title[0] + 
             ": Runner: " + data.event.poster[0] + 
             ", Date: " + (new Date().getMonth() + 1) + "/" + new Date().getDate() +
@@ -27,6 +25,7 @@ class CDSpyMonitor extends AbstractModule {
             
             this.dClient.channels.resolve(process.env.FF_THREAD_CHANNEL).send(msg);
         } 
+        this.latest = data.event.id[0] > this.latest ? data.event.id[0] : this.latest;
       });
   }
 
