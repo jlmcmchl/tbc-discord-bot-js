@@ -96,6 +96,11 @@ for (var i in modules) {
   for (var key in module) {
     app.get(key, module[key]);
   }
+  
+  module = modules[i].postEndpoints();
+  for (var key in module) {
+    app.post(key, module[key]);
+  }
 }
 
 app.listen(app.get('port'), function() {

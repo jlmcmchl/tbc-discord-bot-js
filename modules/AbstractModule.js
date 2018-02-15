@@ -19,6 +19,9 @@ class AbstractModule {
   getEndpoints() {
     return {};
   }
+  postEndpoints() {
+    return {};
+  }
 }
 
 module.exports = AbstractModule;

@@ -1,10 +1,16 @@
 const AbstractModule = require('./AbstractModule');
 class TBAWebhookHandler extends AbstractModule {
-  getEndpoints() {
+  postEndpoints() {
     return {
       '/webhook': (request, response) => {
-        console.log(request);
         response.send('Request recv\'d.');
+        var body = '';
+        request.on('data', data => {
+          body += data;
+        });
+        request.on('end', () => {
+          console.log(body);
+        });
       }
     };
   }
