@@ -4,6 +4,7 @@ class TBAWebhookHandler extends AbstractModule {
     return {
       '/webhook': (request, response) => {
         console.log(request);
+        response.send('Request recv\'d.');
       }
     };
   }
