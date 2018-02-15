@@ -44,7 +44,7 @@ class GriffBot extends AbstractModule {
   }
 
   isGriff(obj) {
-    return true; //obj.id == process.env.GRIFF_ID || obj.id == process.env.JOE_ID;
+    return obj.id == process.env.GRIFF_ID || obj.id == process.env.JOE_ID;
   }
 
   archiveEvent(event, message) {
