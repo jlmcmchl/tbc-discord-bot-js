@@ -160,7 +160,7 @@ ${results.join('\n')}`);
           this.saveDraft(message, null, (key) => {
             this.pgClient.query(selectDraftsKey, [key], (err, res) => {
               message.channel.send(`Hey ${message.author.username}, I have you setup to run **${res.rows[0].name}** on **${res.rows[0].date}**.
-It will be **${res.rows[0].rounds} rounds** of these teams: ${res.rows[0].teams}
+It will be **${res.rows[0].rounds} rounds** of these teams: <${res.rows[0].teams}>
 I'll setup your channel and roles the day of.`);
             });
           });
@@ -192,7 +192,7 @@ I'll setup your channel and roles the day of.`);
                 this.saveDraft(draft.message, draft.key, (key) => {
                   this.pgClient.query(selectDraftsKey, [key], (err, res) => {
                     message.channel.send(`Hey ${message.author.username}, I've updated your draft of **${res.rows[0].name}** on **${res.rows[0].date}**.
-It will be **${res.rows[0].rounds} rounds** of these teams: ${res.rows[0].teams}`);
+It will be **${res.rows[0].rounds} rounds** of these teams: <${res.rows[0].teams}>`);
                   });
                 });
               }));
@@ -243,7 +243,7 @@ It will be **${res.rows[0].rounds} rounds** of these teams: ${res.rows[0].teams}
                 this.saveDraft(draft.message, draft.key, (key) => {
                   this.pgClient.query(selectDraftsKey, [key], (err, res) => {
                     oldMessage.channel.send(`Hey ${oldMessage.author.username}, I've updated your draft of **${res.rows[0].name}** on **${res.rows[0].date}**.
-It will be **${res.rows[0].rounds} rounds** of these teams: ${res.rows[0].teams}`);
+It will be **${res.rows[0].rounds} rounds** of these teams: <${res.rows[0].teams}>`);
                   });
                 });
               }));
