@@ -7,26 +7,18 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "node test.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "async": "^2.5.0",
-    "bufferutil": "^3.0.2",
-    "discord.js": "github:hydrabolt/discord.js#master",
+    "discord.js": "github:discordjs/discord.js#master",
     "ejs": "2.5.6",
-    "elasticsearch": "^13.3.1",
-    "erlpack": "github:discordapp/erlpack",
-    "express": "4.15.2",
+    "elasticsearch": "^15.1.1",
+    "express": "^4.16.3",
     "later": "^1.2.0",
-    "libsodium-wrappers": "^0.5.4",
-    "node-opus": "^0.2.7",
-    "opusscript": "0.0.3",
     "pg": "^7.3.0",
     "request": "^2.83.0",
-    "sodium": "^2.0.1",
     "superagent": "^3.6.3",
-    "uws": "^8.14.1",
     "xml-nodes": "^0.1.5",
     "xml-objects": "^1.0.1",
     "xml2js": "^0.4.19"
