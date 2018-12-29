@@ -7,6 +7,7 @@ var TeamAwardList = require('./TeamAwardList');
 var CDSpyMonitor = require('./CDSpyMonitor');
 var magicBall = require('./magicBall');
 var TBAWebhookHandler = require('./TBAWebhookHandler');
+//var MessageCrawler = require('./messageCrawler');
 
 class Modules {
   constructor() {
@@ -16,10 +17,11 @@ class Modules {
       new Ds(),
       new Quote(),
       new GriffBot(),
-      new CDSpyMonitor(),
+      //new CDSpyMonitor(),
       //new TeamAwardList(),
       new magicBall(),
       new TBAWebhookHandler(),
+      //new MessageCrawler(),
     ];
   }
   Modules() {
