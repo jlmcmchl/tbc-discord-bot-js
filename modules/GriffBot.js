@@ -3,7 +3,7 @@ const AbstractModule = require('./AbstractModule');
 class GriffBot extends AbstractModule {
   getEvents() {
     return [
-      {
+      /*{
         'key': 'message',
         'callback': message => {
           if (!this.isGriff(message.author)) {
@@ -11,13 +11,10 @@ class GriffBot extends AbstractModule {
           }
           this.archiveEvent('message', message);
         }
-      },
+      },*/
       {
         'key': 'messageDelete',
         'callback': message => {
-          if (!this.isGriff(message.author)) {
-            return;
-          }
           this.archiveEvent('messageDelete', message);
         }
       },
@@ -25,9 +22,6 @@ class GriffBot extends AbstractModule {
         'key': 'messageDeleteBulk',
         'callback': messages => {
           messages.map(message => {
-            if (!this.isGriff(message.author)) {
-              return;
-            }
             this.archiveEvent('messagesDeleteBulk', message);
           });
         }
@@ -38,6 +32,7 @@ class GriffBot extends AbstractModule {
           if (!this.isGriff(oldMessage.author)) {
             return;
           }
+          this.archiveEvent('oldMessage', oldMessage);
           this.archiveEvent('messageUpdate', newMessage);
         }
       }];

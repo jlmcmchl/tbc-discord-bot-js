@@ -1,6 +1,6 @@
 const AbstractModule = require('./AbstractModule');
 const Pg = require('pg');
-const {Permissions} = require('discord.js');
+const { Permissions } = require('discord.js');
 const later = require('later');
 const async = require('async');
 
