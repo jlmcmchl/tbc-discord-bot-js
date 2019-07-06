@@ -14,7 +14,7 @@ pgClient.connect();
 var Elasticsearch = require('elasticsearch');
 var esClient = new Elasticsearch.Client({
   host: process.env.BONSAI_URL,
-  'apiVersion': '5.4',
+  'apiVersion': '6.5',
 });
 
 var Modules = require('./modules');
