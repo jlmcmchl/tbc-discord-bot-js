@@ -11,9 +11,7 @@ class Modules {
       new Ds(),
       new Quote(),
       new GriffBot(),
-      new TeamAwardList(),
       new magicBall(),
-      new TBAWebhookHandler(),
     ];
   }
   Modules() {
