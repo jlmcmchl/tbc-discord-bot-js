@@ -3,6 +3,7 @@ var Ds = require('./schedule-draft');
 var Quote = require('./quote');
 var GriffBot = require('./GriffBot');
 var magicBall = require('./magicBall');
+var nick = require("./nicknames");
 
 class Modules {
   constructor() {
@@ -12,6 +13,7 @@ class Modules {
       new Quote(),
       new GriffBot(),
       new magicBall(),
+      new nick(),
     ];
   }
   Modules() {
