@@ -84,7 +84,7 @@ dClient.on('userUpdate', function (oldUser, newUser) { if (debug) { console.log(
 dClient.on('voiceStateUpdate', function (oldMember, newMember) { if (debug) { console.log('voiceStateUpdate', oldMember, newMember); } if (events.has('voiceStateUpdate')) { var cbs = events.get('voiceStateUpdate'); cbs.map(cb => cb(oldMember, newMember)); } });
 dClient.on('warn', function (info) { if (debug) { console.log('warn', info); } if (events.has('warn')) { var cbs = events.get('warn'); cbs.map(cb => cb(info)); } });
 
-//dClient.login('Bot ' + process.env.TOKEN || '');
+dClient.login('Bot ' + process.env.TOKEN || '');
 
 
 app.set('port', (process.env.PORT || 5000));
