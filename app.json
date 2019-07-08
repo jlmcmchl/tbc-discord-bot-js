@@ -1,7 +1,0 @@
-{
-  "name": "tbc-discord-bot",
-  "description": "The Breakfast Company's Discord Bot",
-  "repository": "https://github.com/jlmcmchl/tbc-discord-bot-js",
-  "keywords": ["frc", "FIRST", "discord", "TBA"],
-  "image": "heroku/nodejs"
-}
