@@ -1,6 +1,6 @@
 var Base = require('./base');
 var Ds = require('./schedule-draft');
-var GriffBot = require('./GriffBot');
+var Archive = require('./archive');
 var magicBall = require('./magicBall');
 var nick = require("./nicknames");
 
@@ -9,7 +9,7 @@ class Modules {
     this.modules = [
       new Base(),
       new Ds(),
-      new GriffBot(),
+      new Archive(),
       new magicBall(),
       new nick(),
     ];

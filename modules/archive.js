@@ -1,6 +1,7 @@
 const AbstractModule = require('./AbstractModule');
+const uuidv4 = require('uuid/v4');
 
-class GriffBot extends AbstractModule {
+class Archive extends AbstractModule {
   getEvents() {
     return [
       {
@@ -56,12 +57,12 @@ class GriffBot extends AbstractModule {
       }
     };
 
-    this.esClient.index({
-      index: 'griffin',
-      type: 'message',
+    this.esClient.create({
+      id: uuidv4(),
+      index: 'archive',
       body: content
-    }, (err, res) => console.log(err, res));
+    }).then(console.log).catch(console.log);
   }
 }
 
-module.exports = GriffBot;
+module.exports = Archive;

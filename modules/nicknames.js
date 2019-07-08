@@ -8,22 +8,34 @@ const updateNick = 'UPDATE nick SET team = $3, name = $4 WHERE guild_id = $1 AND
 const updateRest = 'UPDATE nick SET rest = $3 WHERE guild_id = $1 AND user_id = $2;';
 
 class Nicknames extends AbstractModule {
-  updateNick(guild, user, reason) {
-    this.pgClient.query(getNick, [guild, user]).then(res => {
-      var row = res.rows[0];
-      console.log(row);
-      var nick = '[' + row.team + '] ' + row.name;
-      if (row.rest) {
-        nick += ' | ' + row.rest;
-      }
+  async getNick(guild, user) {
+    return this.esClient.get({
+      id: guild + user,
+      index: 'nick'
+    });
+  }
+  putNick(guild, user, nick) {
+    return this.esClient.index({
+      id: guild + user,
+      body: nick
+    });
+  }
+  async updateNick(guild, user, reason) {
+    var nick_result = await this.getNick(guild, user);
 
-      nick = nick.substr(0, 32);
+    var nick_source = nick_result.body._source;
 
-      return this.dClient.guilds
-        .resolve(guild)
-        .members.fetch(user)
-        .then(user => user.setNickname(nick, reason));
-    }).catch(console.log);
+    var nick = '[' + nick_source.team + '] ' + nick_source.name;
+    if (nick_source.rest) {
+      nick += ' | ' + nick_source.rest;
+    }
+
+    nick = nick.substr(0, 32);
+
+    return this.dClient.guilds
+      .resolve(guild)
+      .members.fetch(user)
+      .then(user => user.setNickname(nick, reason));
   }
 
   getEvents() {
@@ -44,17 +56,9 @@ class Nicknames extends AbstractModule {
           var team = r[2];
           var name = r[3];
 
-          this.pgClient.query(nickExists, [guild, user])
-            .then(res => {
-              var query = createNick;
-              if (res.rows.length > 0) {
-                query = updateNick;
-              }
-
-              return this.pgClient.query(query, [guild, user, team, name]);
-            })
+          this.putNick(guild, user, { team: team, name: name, rest: null })
             .then(_ => this.updateNick(guild, user, "!nick <@" + user + "> " + team + " " + name))
-            .catch(console.log);
+            .catch(console.error);
         }
       },
       {
@@ -68,13 +72,15 @@ class Nicknames extends AbstractModule {
           var user = message.author.id;
           var rest = r[1];
 
-          this.pgClient.query(nickExists, [user])
-            .then(res => {
-              if (res.rows.length == 1) {
-                return this.pgClient.query(updateRest, [user, rest]);
-              }
-            }).then(_ => this.updateNick(guild, user, "!nick " + rest))
-            .catch(console.log);
+          this.getNick(guild, user)
+            .then(result => {
+              var nick_source = result.body._source;
+              nick_source.rest = rest;
+
+              return this.putNick(guild, user, nick_source);
+            })
+            .then(_ => this.updateNick(guild, user, "!nick " + rest))
+            .catch(console.error);
         }
       },
     ];

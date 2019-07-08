@@ -15,7 +15,8 @@
     "discord.js": "github:discordjs/discord.js#master",
     "later": "^1.2.0",
     "superagent": "^3.6.3",
-    "superagent-throttle": "^1.0.1"
+    "superagent-throttle": "^1.0.1",
+    "uuid": "^3.3.2"
   },
   "repository": {
     "type": "git",
