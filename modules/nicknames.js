@@ -17,6 +17,7 @@ class Nicknames extends AbstractModule {
   putNick(guild, user, nick) {
     return this.esClient.index({
       id: guild + user,
+      index: 'nick',
       body: nick
     });
   }
