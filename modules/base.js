@@ -13,6 +13,14 @@ class Base extends AbstractModule {
           }
         });
       }
+    }, {
+      'key': 'message',
+      'callback': message => {
+        if (!message.guild) {
+          console.log("DM Received");
+          console.log(message);
+        }
+      }
     }];
   }
 }

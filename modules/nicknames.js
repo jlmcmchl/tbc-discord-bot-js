@@ -1,11 +1,6 @@
 const AbstractModule = require('./AbstractModule');
 const { Permissions } = require('discord.js');
 
-const nickExists = 'SELECT * FROM nick WHERE guild_id = $1 AND user_id = $2;';
-const createNick = 'INSERT INTO nick (guild_id, user_id, team, name) VALUES ($1, $2, $3, $4);';
-const getNick = 'SELECT team, name, rest FROM nick WHERE guild_id = $1 AND user_id = $2';
-const updateNick = 'UPDATE nick SET team = $3, name = $4 WHERE guild_id = $1 AND user_id = $2;';
-const updateRest = 'UPDATE nick SET rest = $3 WHERE guild_id = $1 AND user_id = $2;';
 
 class Nicknames extends AbstractModule {
   async getNick(guild, user) {
@@ -44,14 +39,20 @@ class Nicknames extends AbstractModule {
       {
         'key': 'message',
         'callback': message => {
+          // only guild messages
+          if (!message.guild) {
+            return;
+          }
           var author = message.guild.members.get(message.author.id);
           if (author.permissions.bitfield & Permissions.FLAGS.ADMINISTRATOR == 0) {
             return;
           }
+
           var r = /^!nick <@!?(\d+)> (\w+) (.+)$/i.exec(message.content);
           if (!r) {
             return;
           }
+
           var guild = message.guild.id;
           var user = r[1];
           var team = r[2];
