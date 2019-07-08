@@ -3,15 +3,6 @@ const AbstractModule = require('./AbstractModule');
 class GriffBot extends AbstractModule {
   getEvents() {
     return [
-      /*{
-        'key': 'message',
-        'callback': message => {
-          if (!this.isGriff(message.author)) {
-            return;
-          }
-          this.archiveEvent('message', message);
-        }
-      },*/
       {
         'key': 'messageDelete',
         'callback': message => {
@@ -39,7 +30,7 @@ class GriffBot extends AbstractModule {
   }
 
   isGriff(obj) {
-    return process.env.TRACK_IDS.indexOf(obj.id) >= 0;
+    return (process.env.TRACK_IDS || "").indexOf(obj.id) >= 0;
   }
 
   archiveEvent(event, message) {
@@ -70,13 +61,6 @@ class GriffBot extends AbstractModule {
       type: 'message',
       body: content
     }, (err, res) => console.log(err, res));
-  }
-
-  //TODO implement search on es index
-  getEndpoints() {
-    return {
-      '/gSearch': (request, response) => response.send("Hello World!"),
-    };
   }
 }
 

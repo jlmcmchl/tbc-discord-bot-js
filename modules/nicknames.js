@@ -31,7 +31,6 @@ class Nicknames extends AbstractModule {
       {
         'key': 'message',
         'callback': message => {
-          console.log(message.content);
           var author = message.guild.members.get(message.author.id);
           if (author.permissions.bitfield & Permissions.FLAGS.ADMINISTRATOR == 0) {
             return;

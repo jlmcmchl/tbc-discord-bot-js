@@ -9,16 +9,11 @@ class Base extends AbstractModule {
           'status': 'online',
           'afk': false,
           'activity': {
-            'name': 'Maintenance Window'
+            'name': 'Office Simulator 2019'
           }
         });
       }
     }];
-  }
-  getEndpoints() {
-    return {
-      '/': (request, response) => response.send("Hello World!"),
-    };
   }
 }
 

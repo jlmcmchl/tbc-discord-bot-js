@@ -1,5 +1,4 @@
 const AbstractModule = require('./AbstractModule');
-const Pg = require('pg');
 const { Permissions } = require('discord.js');
 const later = require('later');
 const async = require('async');
@@ -250,14 +249,6 @@ It will be **${res.rows[0].rounds} rounds** of these teams: <${res.rows[0].teams
           });
         }
       },];
-  }
-
-  getEndpoints() {
-    return {
-      '/getDrafts': (request, response) => {
-        this.updateDrafts(); response.send('Checking if there\'s drafts to make...');
-      }
-    };
   }
 }
 

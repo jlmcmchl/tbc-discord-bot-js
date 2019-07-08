@@ -1,8 +1,4 @@
 const AbstractModule = require('./AbstractModule');
-const { Client } = require('pg');
-const { Permissions } = require('discord.js');
-const later = require('later');
-const async = require('async');
 
 const insertQuote = 'INSERT INTO Quotes (User_ID, Content) Values ($1, $2);';
 const getQuote = 'SELECT User_ID, Content FROM Quotes WHERE Quote_ID = $1;';

@@ -1,20 +1,10 @@
-var express = require('express');
-var app = express();
-
 var Discord = require('discord.js');
 var dClient = new Discord.Client();
 
-var Pg = require('pg');
-pgClient = new Pg.Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true,
-});
-pgClient.connect();
-
 var Elasticsearch = require('elasticsearch');
 var esClient = new Elasticsearch.Client({
-  host: process.env.BONSAI_URL,
-  'apiVersion': '6.5',
+  host: '127.0.0.1',
+  apiVersion: '7.0',
 });
 
 var Modules = require('./modules');
@@ -24,7 +14,6 @@ var modules = classes.Modules();
 var events = new Map();
 for (var i in modules) {
   modules[i].setDClient(dClient);
-  modules[i].setPGClient(pgClient);
   modules[i].setESClient(esClient);
 
   moduleEvents = modules[i].getEvents();
@@ -84,24 +73,19 @@ dClient.on('userUpdate', function (oldUser, newUser) { if (debug) { console.log(
 dClient.on('voiceStateUpdate', function (oldMember, newMember) { if (debug) { console.log('voiceStateUpdate', oldMember, newMember); } if (events.has('voiceStateUpdate')) { var cbs = events.get('voiceStateUpdate'); cbs.map(cb => cb(oldMember, newMember)); } });
 dClient.on('warn', function (info) { if (debug) { console.log('warn', info); } if (events.has('warn')) { var cbs = events.get('warn'); cbs.map(cb => cb(info)); } });
 
-dClient.login('Bot ' + process.env.TOKEN || '');
+dClient.login('Bot ' + (process.env.TOKEN || 'MjQ5NTYzNTYzMDc5ODkyOTky.DL-uLg.31CnXqpDTOB9c5uj6g06bimrqHM') || '');
 
+function sleep(ms){
+  return new Promise(resolve=>{
+      setTimeout(resolve,ms);
+  });
+}
 
-app.set('port', (process.env.PORT || 5000));
-
-for (var i in modules) {
-  var module = modules[i].getEndpoints();
-  for (var key in module) {
-    app.get(key, module[key]);
-  }
-
-  module = modules[i].postEndpoints();
-  for (var key in module) {
-    app.post(key, module[key]);
+async function run() {
+  console.log("SLFF Secretary Started");
+  while(true) {
+    await sleep(1000);
   }
 }
 
-app.listen(app.get('port'), function () {
-  console.log('Node app is running on port', app.get('port'));
-});
-
+run();
