@@ -16,17 +16,31 @@ class Nicknames extends AbstractModule {
       body: nick
     });
   }
-  async updateNick(guild, user, reason) {
-    var nick_result = await this.getNick(guild, user);
 
-    var nick_source = nick_result.body._source;
+  getTeam(guild, user_id) {
+    var user = this.dClient.guilds.resolve(guild).members.fetch(user_id);
 
-    var nick = '[' + nick_source.team + '] ' + nick_source.name;
-    if (nick_source.rest) {
-      nick += ' | ' + nick_source.rest;
+    const { body } = await this.esClient.search({
+      index: 'team',
+      body: {
+        query: {
+          ids: user.roles.map(role => role.id)
+        }
+      }
+    });
+
+    if (body.hits.total.value > 0) {
+      return body.hits.hits[0];
     }
 
-    nick = nick.substr(0, 32);
+    return null;
+  }
+
+  async updateNick(guild, user, reason) {
+    var team = this.getTeam(guild, user);
+    var { body } = await this.getNick(guild, user);
+
+    var nick = `${iif(team == null, "", `[${team._source.short}] `)}${body._source.name}${iif(body._source.rest == "", "", ` | ${body._source.rest}`)}`.substr(0, 32);
 
     return this.dClient.guilds
       .resolve(guild)
